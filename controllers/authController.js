@@ -19,8 +19,11 @@ exports.register = async (req, res) => {
             return res.status(400).json({ error: 'Email already in use' });
         }
 
+        // 비밀번호 암호화 (Base64)
+        const encodedPassword = Buffer.from(password).toString('base64');
+
         // 새 사용자 생성
-        const newUser = new User({ email, password });
+        const newUser = new User({ email, encodedPassword });
         await newUser.save();
 
         res.status(201).json({ message: 'User registered successfully' });
