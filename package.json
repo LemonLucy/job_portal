@@ -6,13 +6,22 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "LemonLucy",
   "license": "ISC",
-  "description": "",
+  "description": "job portal project",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LemonLucy/job_portal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LemonLucy/job_portal/issues"
+  },
+  "homepage": "https://github.com/LemonLucy/job_portal#readme"
 }
