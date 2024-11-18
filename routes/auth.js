@@ -13,7 +13,9 @@ router.post('/register', async (req, res) => {
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
-});router.post('/login', login);
+});
+
+router.post('/login', login);
 
 router.get('/profile', protect, async (req, res) => {
     try {
