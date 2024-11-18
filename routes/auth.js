@@ -30,5 +30,28 @@ router.get('/profile', protect, async (req, res) => {
     }
 });
 
+router.delete('/delete', protect, async (req, res) => {
+    try {
+        // 사용자 ID 추출
+        const userId = req.user.id;
+
+        // 사용자 삭제
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // 추가: 사용자와 연관된 데이터 삭제 (예: 지원 내역, 북마크 등)
+        // await Application.deleteMany({ userId });
+        // await Bookmark.deleteMany({ userId });
+
+        res.status(200).json({ message: "Account deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Error deleting account" });
+    }
+});
+
+
 
 module.exports = router;
