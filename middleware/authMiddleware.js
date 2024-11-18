@@ -1,16 +1,23 @@
-//JWT 인증 미들웨어
-const jwt = require('jsonwebtoken');
-
 exports.protect = (req, res, next) => {
-    const token = req.header('Authorization')?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'Unauthorized, no token provided' });
+    const authHeader = req.header('Authorization');
+    if (!authHeader) {
+        console.log("No Authorization header");
+        return res.status(401).json({ error: 'Unauthorized, no token provided' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+        console.log("No token found in Authorization header");
+        return res.status(401).json({ error: 'Unauthorized, no token provided' });
+    }
 
     try {
-        const decoded = jwt.verify(token, 'your_secret_key');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Decoded token:", decoded);
         req.user = decoded;
-        console.log("Decoded User:", decoded);
         next();
     } catch (err) {
+        console.error("Token verification failed:", err.message);
         res.status(401).json({ error: 'Token is not valid' });
     }
 };
