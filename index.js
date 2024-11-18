@@ -12,7 +12,7 @@ connectDB();
 app.use(express.json());
 
 // 라우트
-app.use('/', authRoutes);
+app.use('/auth', authRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
