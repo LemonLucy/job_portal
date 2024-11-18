@@ -4,20 +4,16 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-console.log("Starting server...");
-
 // 회원가입
 exports.register = async (req, res) => {
     const { email, password } = req.body;
 
-    console.log("Request body:", req.body);
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).send({ error: 'Invalid email format' });
-    }
-
     try {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).send({ error: 'Invalid email format' });
+        }
+    
         // 이메일 중복 체크
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -28,7 +24,7 @@ exports.register = async (req, res) => {
         const encodedPassword = Buffer.from(password).toString('base64');
 
         // 새 사용자 생성
-        const newUser = new User({ email, encodedPassword });
+        const newUser = new User({ email, password: encodedPassword });
         await newUser.save();
 
         res.status(201).json({ message: 'User registered successfully' });
