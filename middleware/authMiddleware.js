@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken'); // jwt 모듈 가져오기
+require('dotenv').config();
+
 exports.protect = (req, res, next) => {
     const authHeader = req.header('Authorization');
     if (!authHeader) {

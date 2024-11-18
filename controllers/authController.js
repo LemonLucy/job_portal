@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
+console.log("Starting server...");
+
 // 회원가입
 exports.register = async (req, res) => {
     const { email, password } = req.body;
