@@ -7,6 +7,11 @@ const bcrypt = require('bcrypt');
 exports.register = async (req, res) => {
     const { email, password } = req.body;
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(req.body.email)) {
+        return res.status(400).send({ error: 'Invalid email format' });
+    }
+
     try {
         // 이메일 중복 체크
         const existingUser = await User.findOne({ email });
