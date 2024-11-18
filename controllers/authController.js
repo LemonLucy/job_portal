@@ -6,18 +6,21 @@ const bcrypt = require('bcrypt');
 // 회원가입
 exports.register = async (req, res) => {
     const { email, password } = req.body;
+
     try {
-        const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        // 이메일 중복 체크
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email already in use' });
+        }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+        // 새 사용자 생성
+        const newUser = new User({ email, password });
+        await newUser.save();
 
-        // JWT 토큰 생성 시 id 필드에 user._id 할당
-        const token = jwt.sign({ id: user._id }, 'your_secret_key', { expiresIn: '1h' });
-        res.status(200).json({ message: 'Login successful', token });
+        res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
-        res.status(400).json({ error: 'Error registering user', details: err });
+        res.status(500).json({ error: 'Error registering user', details: err.message });
     }
 };
 
