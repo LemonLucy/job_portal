@@ -2,7 +2,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
+const crypto = require('crypto');require('dotenv').config();
 
 // 회원가입
 exports.register = async (req, res) => {
@@ -13,18 +13,15 @@ exports.register = async (req, res) => {
         if (!emailRegex.test(email)) {
             return res.status(400).send({ error: 'Invalid email format' });
         }
-    
+
         // 이메일 중복 체크
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already in use' });
         }
 
-        // 비밀번호 암호화 (Base64)
-        const encodedPassword = Buffer.from(password).toString('base64');
-
-        // 새 사용자 생성
-        const newUser = new User({ email, password: encodedPassword });
+        // 새 사용자 생성 (비밀번호 암호화는 userSchema.pre('save')에서 처리)
+        const newUser = new User({ email, password });
         await newUser.save();
 
         res.status(201).json({ message: 'User registered successfully' });
@@ -35,13 +32,21 @@ exports.register = async (req, res) => {
 
 // 로그인
 exports.login = async (req, res) => {
+    console.log("Login request received:", req.body);
     const { email, password } = req.body;
+
     try {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ error: 'User not found' });
 
+        console.log("User found:", user);
+        console.log("Stored hashed password:", user.password);
+
+        // 비밀번호 비교
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+
+        console.log("Password match successful");
 
         const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         const refreshToken = crypto.randomBytes(40).toString('hex');
@@ -55,18 +60,30 @@ exports.login = async (req, res) => {
 
         res.status(200).json({ message: 'Login successful', accessToken, refreshToken });
     } catch (err) {
+        console.log("Login error:", err.message);
         res.status(500).json({ error: 'Error logging in', details: err });
     }
 };
 
+
 exports.refreshToken = async (req, res) => {
     const { refreshToken } = req.body;
 
+    if (!refreshToken) {
+        return res.status(400).json({ error: 'Refresh token is required' });
+    }
+
     try {
+        console.log("Received Refresh Token:", refreshToken);
         const user = await User.findOne({ refreshToken });
-        if (!user) return res.status(404).json({ error: 'Invalid refresh token' });
+
+        if (!user) {
+            console.log("Invalid Refresh Token:", refreshToken);
+            return res.status(404).json({ error: 'Invalid refresh token' });
+        }
 
         const newAccessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        console.log("Generated new Access Token:", newAccessToken);
 
         res.status(200).json({ accessToken: newAccessToken });
     } catch (err) {

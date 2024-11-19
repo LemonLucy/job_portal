@@ -1,6 +1,6 @@
 //회원 관리 API 라우트
 const express = require('express');
-const { register, login } = require('../controllers/authController');
+const { register, login, refreshToken  } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 const User = require('../models/User');
@@ -9,7 +9,7 @@ router.post('/register', register);
 
 router.post('/login', login);
 
-router.post('/refresh', authController.refreshToken);
+router.post('/refresh', refreshToken);
 
 router.get('/profile', protect, async (req, res) => {
     try {
