@@ -22,6 +22,38 @@ router.get('/profile', protect, async (req, res) => {
     }
 });
 
+router.put('/profile', protect, async (req, res) => {
+    try {
+        const { name, email, currentPassword, newPassword } = req.body;
+
+        // 현재 로그인한 사용자 정보 가져오기
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // 비밀번호 변경 로직
+        if (currentPassword && newPassword) {
+            const isMatch = await bcrypt.compare(currentPassword, user.password);
+            if (!isMatch) {
+                return res.status(400).json({ error: "Current password is incorrect" });
+            }
+            user.password = await bcrypt.hash(newPassword, 10); // 비밀번호 암호화 후 저장
+        }
+
+        // 프로필 정보 수정 로직
+        if (name) user.name = name;
+        if (email) user.email = email;
+
+        await user.save();
+
+        res.status(200).json({ message: "Profile updated successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Error updating profile", details: err.message });
+    }
+});
+
 router.delete('/delete', protect, async (req, res) => {
     try {
         // 사용자 ID 추출
