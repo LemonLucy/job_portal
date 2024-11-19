@@ -43,15 +43,33 @@ exports.login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const refreshToken = crypto.randomBytes(40).toString('hex');
 
         // 로그인 이력 저장
         const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         user.loginHistory.push({ ipAddress });
+
+        user.refreshToken = refreshToken;
         await user.save();
-        
-        res.status(200).json({ message: 'Login successful', token });
+
+        res.status(200).json({ message: 'Login successful', accessToken, refreshToken });
     } catch (err) {
         res.status(500).json({ error: 'Error logging in', details: err });
+    }
+};
+
+exports.refreshToken = async (req, res) => {
+    const { refreshToken } = req.body;
+
+    try {
+        const user = await User.findOne({ refreshToken });
+        if (!user) return res.status(404).json({ error: 'Invalid refresh token' });
+
+        const newAccessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.status(200).json({ accessToken: newAccessToken });
+    } catch (err) {
+        res.status(500).json({ error: 'Error refreshing token', details: err });
     }
 };
