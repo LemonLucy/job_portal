@@ -5,6 +5,19 @@ const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    // 로그인 이력
+    loginHistory: [
+        {
+            date: {
+                type: Date,
+                default: Date.now
+            },
+            ipAddress: {
+                type: String,
+                default: ""
+            }
+        }
+    ]
 });
 
 // 비밀번호 암호화
