@@ -45,6 +45,11 @@ exports.login = async (req, res) => {
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+        // 로그인 이력 저장
+        const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        user.loginHistory.push({ ipAddress });
+        await user.save();
+        
         res.status(200).json({ message: 'Login successful', token });
     } catch (err) {
         res.status(500).json({ error: 'Error logging in', details: err });
