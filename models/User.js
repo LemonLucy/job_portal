@@ -17,7 +17,11 @@ const userSchema = new mongoose.Schema({
                 default: ""
             }
         }
-    ]
+    ],
+    refreshToken: {
+        type: String,
+        default: ""
+    }
 });
 
 // 비밀번호 암호화
