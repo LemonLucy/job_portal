@@ -9,6 +9,8 @@ router.post('/register', register);
 
 router.post('/login', login);
 
+router.post('/refresh', authController.refreshToken);
+
 router.get('/profile', protect, async (req, res) => {
     try {
         console.log("Fetching user profile with ID:", req.user.id);
