@@ -3,11 +3,11 @@ const Job = require('../models/jobModel');
 // 모든 채용 공고 조회 및 필터링/정렬
 exports.getAllJobs = async (req, res) => {
     try {
-        const { location, experience, requirement, sort, page = "1", limit = "10" } = req.query;
+        const { location, experience, requirement, sort, page = "1"} = req.query;
 
         // `page`와 `limit` 값을 숫자로 변환
         const pageNum = parseInt(page, 10);
-        const limitNum = parseInt(limit, 10);
+        const limit = 20;
 
         // 필터링 조건 생성
         let filter = {};
@@ -27,7 +27,7 @@ exports.getAllJobs = async (req, res) => {
         const jobs = await Job.find(filter)
             .sort(sortOption)
             .skip(skip)
-            .limit(parseInt(limit));
+            .limit(limit);
 
         // 총 데이터 개수
         const totalItems = await Job.countDocuments(filter);
