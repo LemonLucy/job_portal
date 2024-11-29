@@ -49,13 +49,21 @@ exports.createApplication = async (req, res) => {
 
 // 지원 목록 조회
 exports.getApplications = async (req, res) => {
-    const userId = req.user.id;
+    const { userId } = req.params; // URL에서 사용자 ID 추출
     const { status, sort = 'desc' } = req.query;
 
     try {
         // 필터 조건
-        let filter = { user: userId };
-        if (status) filter.status = status;
+        let filter = {};
+        if (userId) {
+            filter.user = userId; // 특정 사용자에 대한 지원 목록
+        } else {
+            filter.user = req.user.id; // 현재 로그인된 사용자의 지원 목록
+        }
+
+        if (status) {
+            filter.status = status; // 상태별 필터링
+        }
 
         // 정렬 조건
         const sortOption = sort === 'asc' ? 1 : -1;
@@ -68,7 +76,10 @@ exports.getApplications = async (req, res) => {
         res.status(200).json({ applications });
     } catch (err) {
         console.error('Error fetching applications:', err.message);
-        res.status(500).json({ error: 'Error fetching applications', details: err.message });
+        res.status(500).json({
+            error: 'Error fetching applications',
+            details: err.message,
+        });
     }
 };
 
@@ -99,6 +110,8 @@ exports.cancelApplication = async (req, res) => {
         );
         await user.save();
 
+        await application.deleteOne();
+        
         res.status(200).json({ message: 'Application cancelled successfully' });
     } catch (err) {
         console.error('Error cancelling application:', err.message);
