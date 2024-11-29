@@ -2,6 +2,7 @@ const express = require('express');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const jobRoutes = require('./routes/job');
+const applyRoutes=require('./routes/applications')
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swaggerOptions');
 
@@ -21,6 +22,7 @@ app.use(express.json());
 // 라우트
 app.use('/auth', authRoutes);
 app.use('/jobs', jobRoutes);
+app.use('/applications',applyRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

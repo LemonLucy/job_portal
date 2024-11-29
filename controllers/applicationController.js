@@ -1,65 +1,69 @@
 const Application = require('../models/Application');
 const Job = require('../models/jobModel');
 
+// 지원 생성
 exports.createApplication = async (req, res) => {
-    try {
-        const { jobId, resume } = req.body;
+    const { id: jobId } = req.params; // URL에서 Job ID 추출
+    const userId = req.user.id;
 
-        // 사용자가 지원한 Job이 존재하는지 확인
+    try {
+        // Job ID 확인
         const job = await Job.findById(jobId);
         if (!job) {
             return res.status(404).json({ error: 'Job not found' });
         }
 
         // 중복 지원 체크
-        const existingApplication = await Application.findOne({ user: req.user.id, job: jobId });
+        const existingApplication = await Application.findOne({ user: userId, job: jobId });
         if (existingApplication) {
             return res.status(400).json({ error: 'You have already applied for this job' });
         }
 
         // 지원 정보 저장
         const application = new Application({
-            user: req.user.id,
+            user: userId,
             job: jobId,
-            resume: resume || null,
-            status: 'applied',
+            status: 'applied', // 기본 상태
         });
 
         await application.save();
         res.status(201).json({ message: 'Application submitted successfully', application });
     } catch (err) {
+        console.error('Error creating application:', err.message);
         res.status(500).json({ error: 'Error creating application', details: err.message });
     }
 };
 
+// 지원 목록 조회
 exports.getApplications = async (req, res) => {
-    try {
-        const { status, sort = 'desc' } = req.query;
+    const userId = req.user.id;
+    const { status, sort = 'desc' } = req.query;
 
+    try {
         // 필터 조건
-        let filter = { user: req.user.id };
-        if (status) {
-            filter.status = status; // 상태별 필터링
-        }
+        let filter = { user: userId };
+        if (status) filter.status = status;
 
         // 정렬 조건
         const sortOption = sort === 'asc' ? 1 : -1;
 
         // 데이터 조회
         const applications = await Application.find(filter)
-            .populate('job', 'title company location') // 관련 Job 정보 포함
+            .populate('job', 'title company location deadline') // 필요한 Job 정보만 포함
             .sort({ createdAt: sortOption });
 
         res.status(200).json({ applications });
     } catch (err) {
+        console.error('Error fetching applications:', err.message);
         res.status(500).json({ error: 'Error fetching applications', details: err.message });
     }
 };
 
+// 지원 취소
 exports.cancelApplication = async (req, res) => {
-    try {
-        const { id } = req.params;
+    const { id } = req.params;
 
+    try {
         // 지원 정보 확인
         const application = await Application.findOne({ _id: id, user: req.user.id });
         if (!application) {
@@ -77,7 +81,7 @@ exports.cancelApplication = async (req, res) => {
 
         res.status(200).json({ message: 'Application cancelled successfully' });
     } catch (err) {
+        console.error('Error cancelling application:', err.message);
         res.status(500).json({ error: 'Error cancelling application', details: err.message });
     }
 };
-

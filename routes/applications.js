@@ -32,9 +32,6 @@ const {
  *               jobId:
  *                 type: string
  *                 description: 지원할 Job의 ID
- *               resume:
- *                 type: string
- *                 description: 이력서 URL (선택사항)
  *             required:
  *               - jobId
  *             example:
@@ -50,7 +47,7 @@ const {
  *       500:
  *         description: 서버 오류
  */
-router.post('/', protect, createApplication);
+router.post('/:id', protect, createApplication);
 
 /**
  * @swagger
