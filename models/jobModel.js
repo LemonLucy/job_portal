@@ -8,8 +8,8 @@ const jobSchema = new mongoose.Schema({
   requirement: { type: String }, // 학력 요건
   jobtype: { type: String }, // 고용 형태
   url: { type: String, required: true }, // 공고 URL
-  deadline: { type: String }, // 지원 마감일
-  date: { type: String }, // 공고 게시일
+  deadline: { type: Date }, // 지원 마감일
+  date: { type: Date }, // 공고 게시일
 }, { timestamps: true });
 
 module.exports = mongoose.model('Job', jobSchema);

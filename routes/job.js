@@ -15,6 +15,7 @@ router.get('/', getAllJobs);
 // 특정 채용 공고 조회
 router.get('/:id', getJobById);
 
+
 // 채용 공고 등록
 router.post('/', createJob);
 

@@ -1,13 +1,51 @@
 const Job = require('../models/jobModel');
 
-// 모든 채용 공고 조회
+// 모든 채용 공고 조회 및 필터링/정렬
 exports.getAllJobs = async (req, res) => {
-  try {
-    const jobs = await Job.find().sort({ date: -1 }); // 최신 공고가 먼저 오도록 정렬
-    res.status(200).json(jobs);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch jobs', details: error.message });
-  }
+    try {
+        const { location, experience, requirement, sort, page = "1", limit = "10" } = req.query;
+
+        // `page`와 `limit` 값을 숫자로 변환
+        const pageNum = parseInt(page, 10);
+        const limitNum = parseInt(limit, 10);
+
+        // 필터링 조건 생성
+        let filter = {};
+        if (location) filter.location = { $regex: `.*${location}.*`, $options: 'i' }; // 부분 일치로 지역 필터링
+        if (experience) filter.experience = { $regex: experience, $options: 'i' }; // 경력 필터링
+        if (requirement) filter.requirement = { $regex: requirement, $options: 'i' }; // 학력 필터링
+
+        console.log("Generated Filter:", filter);
+
+        // 정렬 옵션 생성
+        let sortOption = {};
+        if (sort === 'date') sortOption.date = -1; // 날짜 최신순
+        else if (sort === 'deadline') sortOption.deadline = 1; // 마감 임박순
+
+        // 페이지네이션 계산
+        const skip = (page - 1) * limit;
+        const jobs = await Job.find(filter)
+            .sort(sortOption)
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        // 총 데이터 개수
+        const totalItems = await Job.countDocuments(filter);
+
+        res.status(200).json({
+            status: 'success',
+            currentPage: parseInt(page),
+            totalPages: Math.ceil(totalItems / limit),
+            totalItems,
+            data: jobs,
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Error fetching jobs',
+            details: err.message,
+        });
+    }
 };
 
 // 특정 채용 공고 조회
