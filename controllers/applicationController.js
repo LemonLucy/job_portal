@@ -1,5 +1,6 @@
 const Application = require('../models/Application');
 const Job = require('../models/jobModel');
+const User = require('../models/User'); // User 모델 가져오기
 
 // 지원 생성
 exports.createApplication = async (req, res) => {
@@ -25,12 +26,24 @@ exports.createApplication = async (req, res) => {
             job: jobId,
             status: 'applied', // 기본 상태
         });
-
         await application.save();
-        res.status(201).json({ message: 'Application submitted successfully', application });
+
+        // 사용자 모델에 지원 정보 추가
+        const user = await User.findById(userId);
+        user.applications = user.applications || [];
+        user.applications.push(application._id); // User 모델에 Application ID 추가
+        await user.save();
+
+        res.status(201).json({
+            message: 'Application submitted successfully',
+            application,
+        });
     } catch (err) {
         console.error('Error creating application:', err.message);
-        res.status(500).json({ error: 'Error creating application', details: err.message });
+        res.status(500).json({
+            error: 'Error creating application',
+            details: err.message,
+        });
     }
 };
 
@@ -78,6 +91,13 @@ exports.cancelApplication = async (req, res) => {
         // 상태 업데이트
         application.status = 'cancelled';
         await application.save();
+
+        // 사용자 모델에서 지원 내역 제거
+        const user = await User.findById(req.user.id);
+        user.applications = user.applications.filter(
+            (appId) => appId.toString() !== application._id.toString()
+        );
+        await user.save();
 
         res.status(200).json({ message: 'Application cancelled successfully' });
     } catch (err) {

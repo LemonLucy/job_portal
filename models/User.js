@@ -21,7 +21,13 @@ const userSchema = new mongoose.Schema({
     refreshToken: {
         type: String,
         default: ""
-    }
+    },
+    applications: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Application' // Application 모델과의 참조
+        }
+    ]
 });
 
 // 비밀번호 암호화
