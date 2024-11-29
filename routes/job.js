@@ -1,6 +1,7 @@
 const express = require('express');
 const { getAllJobs, getJobById, createJob, deleteJob, updateJob } = require('../controllers/jobController');
 const router = express.Router();
+const { protect } = require('../middleware/authMiddleware');
 
 /**
  * @swagger
@@ -102,7 +103,7 @@ const router = express.Router();
  *       500:
  *         description: 서버 오류
  */
-router.get('/', getAllJobs);
+router.get('/', protect, getAllJobs);
 
 /**
  * @swagger
@@ -129,7 +130,7 @@ router.get('/', getAllJobs);
  *       500:
  *         description: 서버 오류
  */
-router.get('/:id', getJobById);
+router.get('/:id', protect, getJobById);
 
 /**
  * @swagger
@@ -149,7 +150,7 @@ router.get('/:id', getJobById);
  *       500:
  *         description: 서버 오류
  */
-router.post('/', createJob);
+router.post('/', protect, createJob);
 
 /**
  * @swagger
@@ -178,7 +179,7 @@ router.post('/', createJob);
  *       500:
  *         description: 서버 오류
  */
-router.put('/:id', updateJob);
+router.put('/:id', protect, updateJob);
 
 /**
  * @swagger
@@ -201,6 +202,6 @@ router.put('/:id', updateJob);
  *       500:
  *         description: 서버 오류
  */
-router.delete('/:id', deleteJob);
+router.delete('/:id',protect, deleteJob);
 
 module.exports = router;
