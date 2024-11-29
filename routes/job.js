@@ -64,7 +64,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /job:
+ * /jobs:
  *   get:
  *     summary: 모든 채용 공고 조회 및 필터링/정렬
  *     tags: [Jobs]
@@ -89,7 +89,7 @@ const router = express.Router();
  *         schema:
  *           type: string
  *           enum: [date, deadline]
- *         description: 정렬 기준 (date: 최신순, deadline: 마감 임박순)
+ *         description: "정렬 기준 (date: 최신순, deadline: 마감 임박순)"
  *     responses:
  *       200:
  *         description: 성공적으로 채용 공고 조회
@@ -106,7 +106,7 @@ router.get('/', getAllJobs);
 
 /**
  * @swagger
- * /job/{id}:
+ * /jobs/{id}:
  *   get:
  *     summary: 특정 채용 공고 조회
  *     tags: [Jobs]
@@ -133,7 +133,7 @@ router.get('/:id', getJobById);
 
 /**
  * @swagger
- * /job:
+ * /jobs:
  *   post:
  *     summary: 새로운 채용 공고 등록
  *     tags: [Jobs]
@@ -153,7 +153,7 @@ router.post('/', createJob);
 
 /**
  * @swagger
- * /job/{id}:
+ * /jobs/{id}:
  *   put:
  *     summary: 특정 채용 공고 수정
  *     tags: [Jobs]
@@ -182,7 +182,7 @@ router.put('/:id', updateJob);
 
 /**
  * @swagger
- * /job/{id}:
+ * /jobs/{id}:
  *   delete:
  *     summary: 특정 채용 공고 삭제
  *     tags: [Jobs]

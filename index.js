@@ -20,7 +20,7 @@ app.use(express.json());
 
 // 라우트
 app.use('/auth', authRoutes);
-app.use('/job', jobRoutes);
+app.use('/jobs', jobRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
