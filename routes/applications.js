@@ -16,7 +16,7 @@ const {
 
 /**
  * @swagger
- * /applications:
+ * /applications/{id}:
  *   post:
  *     summary: 지원하기
  *     tags: [Applications]
@@ -47,7 +47,7 @@ const {
  *       500:
  *         description: 서버 오류
  */
-router.post('/:id', createApplication);
+router.post('/:id',protect, createApplication);
 
 /**
  * @swagger

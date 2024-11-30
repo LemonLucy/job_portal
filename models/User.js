@@ -1,11 +1,18 @@
-//사용자 모델(스키마)
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    // 로그인 이력
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true, 
+        match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid email format'] 
+    }, // 이메일 형식 체크
+    password: { 
+        type: String, 
+        required: true, 
+        minlength: [8, 'Password must be at least 8 characters'] 
+    }, // 비밀번호 최소 길이
     loginHistory: [
         {
             date: {
@@ -34,11 +41,11 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     try {
-        const salt = await bcrypt.genSalt(10); // 솔트 생성
-        this.password = await bcrypt.hash(this.password, salt); // 비밀번호 해싱
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
         next();
     } catch (err) {
-        next(err); // 에러 처리
+        next(err);
     }
 });
 
