@@ -67,7 +67,7 @@ exports.getBookmarks = async (req, res) => {
       if (location) query['job.location'] = location;
       if (experience) query['job.experience'] = experience;
       if (salary) query['job.salary'] = { $gte: parseInt(salary) }; // 급여 조건
-      if (stack) query['job.stack'] = stack; // 기술 스택 조건
+      if (stack) query['job.stack'] = { $in: stack.split(',') }; // 다중 스택 필터링
   
       const bookmarks = await Bookmark.find(query).populate('job');
   
