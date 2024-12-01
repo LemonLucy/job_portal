@@ -6,6 +6,7 @@ const applyRoutes=require('./routes/applications')
 const bookmarkRoutes=require('./routes/bookmark')
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swaggerOptions');
+const resumeRoutes = require('./routes/resume');
 
 require('dotenv').config();
 
@@ -24,7 +25,8 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/jobs', jobRoutes);
 app.use('/applications',applyRoutes);
-app.use('/bookmarks', bookmarkRoutes)
+app.use('/bookmarks', bookmarkRoutes);
+app.use('/resumes', resumeRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
