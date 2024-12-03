@@ -4,6 +4,7 @@ const { protect } = require('../middleware/authMiddleware'); // 사용자 인증
 const { 
     createApplication, 
     getApplications, 
+    getUserApplications, 
     cancelApplication 
 } = require('../controllers/applicationController');
 
@@ -16,7 +17,7 @@ const {
 
 /**
  * @swagger
- * /applications/{id}:
+ * /applications:
  *   post:
  *     summary: 지원하기
  *     tags: [Applications]
@@ -32,6 +33,9 @@ const {
  *               jobId:
  *                 type: string
  *                 description: 지원할 Job의 ID
+ *               resume:
+ *                 type: string
+ *                 description: 이력서 파일 URL
  *             required:
  *               - jobId
  *             example:
@@ -47,7 +51,7 @@ const {
  *       500:
  *         description: 서버 오류
  */
-router.post('/:id',protect, createApplication);
+router.post('/', protect, createApplication);
 
 /**
  * @swagger
@@ -93,7 +97,7 @@ router.post('/:id',protect, createApplication);
  *       500:
  *         description: 서버 오류
  */
-router.get('/', getApplications);
+router.get('/', protect, getApplications);
 
 /**
  * @swagger
@@ -152,7 +156,7 @@ router.get('/', getApplications);
  *       500:
  *         description: 서버 오류
  */
-router.get('/:userId', getApplications);
+router.get('/:userId', protect, getUserApplications);
 
 /**
  * @swagger
