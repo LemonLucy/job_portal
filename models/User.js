@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
         required: true, 
         unique: true, 
         match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid email format'] ,
-        email: { type: String, required: true, unique: true },
     }, // 이메일 형식 체크
     password: { 
         type: String, 
@@ -40,10 +39,17 @@ const userSchema = new mongoose.Schema({
 
 // 비밀번호 암호화
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+    console.log("Pre-save hook triggered.");
+    console.log("Password isModified:", this.isModified('password'));
+
+    if (!this.isModified('password')) {
+        console.log("Password not modified, skipping encryption.");
+        return next(); // 비밀번호가 변경되지 않은 경우
+    }
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
+        console.log("Updated hashed password during pre-save:", this.password);
         next();
     } catch (err) {
         next(err);

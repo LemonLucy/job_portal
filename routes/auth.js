@@ -1,9 +1,16 @@
-// 회원 관리 API 라우트
 const express = require('express');
-const { register, login, refreshToken } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
+const {
+    register,
+    login,
+    updatePassword,
+    updateProfile,
+    getProfile,
+    refreshToken,
+    deleteAccount,
+} = require('../controllers/authController');
+
 const router = express.Router();
-const User = require('../models/User');
 
 /**
  * @swagger
@@ -125,7 +132,75 @@ router.post('/login', login);
  *       500:
  *         description: 서버 오류
  */
-router.post('/refresh', refreshToken);
+router.post('/refresh',protect, refreshToken);
+
+/**
+ * @swagger
+ * /auth/profile:
+ *   put:
+ *     summary: 사용자 프로필 및 비밀번호 수정
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 사용자 이름 (선택)
+ *               email:
+ *                 type: string
+ *                 description: 사용자 이메일 (선택)
+ *               oldPassword:
+ *                 type: string
+ *                 description: 기존 비밀번호 (비밀번호 변경 시 필수)
+ *               newPassword:
+ *                 type: string
+ *                 description: 새 비밀번호 (비밀번호 변경 시 필수)
+ *             example:
+ *               name: "New Name"
+ *               email: "newemail@example.com"
+ *               oldPassword: "currentpassword"
+ *               newPassword: "newpassword"
+ *     responses:
+ *       200:
+ *         description: 성공적으로 프로필 또는 비밀번호 수정
+ *       400:
+ *         description: 잘못된 요청 또는 비밀번호 불일치
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Old password is incorrect"
+ *       404:
+ *         description: 사용자 정보 없음
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
+ *         description: 서버 오류
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Error updating profile"
+ */
+router.put('/profile', protect, updateProfile);
 
 /**
  * @swagger
@@ -137,84 +212,57 @@ router.post('/refresh', refreshToken);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: 사용자 프로필 정보 반환
+ *         description: 성공적으로 프로필 조회
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: 사용자 이름
+ *                 email:
+ *                   type: string
+ *                   description: 사용자 이메일
+ *               example:
+ *                 name: John Doe
+ *                 email: johndoe@example.com
+ *       401:
+ *         description: 인증 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized, no token provided"
  *       404:
  *         description: 사용자 정보 없음
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User not found"
  *       500:
  *         description: 서버 오류
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Error retrieving profile"
  */
-router.get('/profile', protect, async (req, res) => {
-    try {
-        console.log("Fetching user profile with ID:", req.user.id);
-        const user = await User.findById(req.user.id).select('-password'); // 비밀번호 제외
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500).json({ error: 'Error retrieving profile' });
-    }
-});
+router.get('/profile', protect, getProfile);
 
 /**
  * @swagger
- * /auth/profile:
- *   put:
- *     summary: 사용자 프로필 수정
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateProfile'
- *     responses:
- *       200:
- *         description: 성공적으로 프로필 수정
- *       400:
- *         description: 비밀번호 불일치 또는 잘못된 요청
- *       404:
- *         description: 사용자 정보 없음
- *       500:
- *         description: 서버 오류
- */
-router.put('/profile', protect, async (req, res) => {
-    try {
-        const { name, email, currentPassword, newPassword } = req.body;
-
-        // 현재 로그인한 사용자 정보 가져오기
-        const user = await User.findById(req.user.id);
-
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        // 비밀번호 변경 로직
-        if (currentPassword && newPassword) {
-            const isMatch = await bcrypt.compare(currentPassword, user.password);
-            if (!isMatch) {
-                return res.status(400).json({ error: "Current password is incorrect" });
-            }
-            user.password = await bcrypt.hash(newPassword, 10); // 비밀번호 암호화 후 저장
-        }
-
-        // 프로필 정보 수정 로직
-        if (name) user.name = name;
-        if (email) user.email = email;
-
-        await user.save();
-
-        res.status(200).json({ message: "Profile updated successfully" });
-    } catch (err) {
-        res.status(500).json({ error: "Error updating profile", details: err.message });
-    }
-});
-
-/**
- * @swagger
- * /auth/delete:
+ * /auth:
  *   delete:
  *     summary: 사용자 계정 삭제
  *     tags: [Auth]
@@ -228,19 +276,6 @@ router.put('/profile', protect, async (req, res) => {
  *       500:
  *         description: 서버 오류
  */
-router.delete('/delete', protect, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const deletedUser = await User.findByIdAndDelete(userId);
-
-        if (!deletedUser) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        res.status(200).json({ message: "Account deleted successfully" });
-    } catch (err) {
-        res.status(500).json({ error: "Error deleting account" });
-    }
-});
+router.delete('/', protect, deleteAccount);
 
 module.exports = router;

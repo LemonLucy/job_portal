@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken'); // jwt 모듈 가져오기
+const { isBlacklisted } = require('../utils/blacklist');
 require('dotenv').config();
 
 exports.protect = (req, res, next) => {
@@ -14,9 +15,15 @@ exports.protect = (req, res, next) => {
         return res.status(401).json({ error: 'Unauthorized, no token provided' });
     }
 
+    console.log("Token received for verification:", token); // 추가
+    if (isBlacklisted(token)) {
+        console.log("Token is blacklisted:", token); // 추가
+        return res.status(401).json({ error: 'Token has been invalidated' });
+    }
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("Decoded token:", decoded);
+        console.log("Decoded token:", decoded); // 추가
         req.user = decoded;
         next();
     } catch (err) {
