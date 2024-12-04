@@ -3,7 +3,7 @@ const Job = require('../models/jobModel');
 // 모든 채용 공고 조회 및 필터링/정렬
 exports.getAllJobs = async (req, res) => {
     try {
-        const { location, experience, requirement, sort, page = "1"} = req.query;
+        const { location, experience, requirement, sort, page = "1", company, position, keyword} = req.query;
 
         // `page`와 `limit` 값을 숫자로 변환
         const pageNum = parseInt(page, 10);
@@ -14,6 +14,17 @@ exports.getAllJobs = async (req, res) => {
         if (location) filter.location = { $regex: `.*${location}.*`, $options: 'i' }; // 부분 일치로 지역 필터링
         if (experience) filter.experience = { $regex: experience, $options: 'i' }; // 경력 필터링
         if (requirement) filter.requirement = { $regex: requirement, $options: 'i' }; // 학력 필터링
+
+        if (company) filter.company = { $regex: `.*${company}.*`, $options: 'i' }; // 회사명 검색
+        if (position) filter.title = { $regex: `.*${position}.*`, $options: 'i' }; // 포지션 검색
+        if (keyword) {
+          filter.$or = [
+              { title: { $regex: `.*${keyword}.*`, $options: 'i' } },
+              { description: { $regex: `.*${keyword}.*`, $options: 'i' } },
+              { company: { $regex: `.*${keyword}.*`, $options: 'i' } },
+              { location: { $regex: `.*${keyword}.*`, $options: 'i' } }
+          ];
+      }
 
         console.log("Generated Filter:", filter);
 
@@ -59,6 +70,33 @@ exports.getJobById = async (req, res) => {
     res.status(200).json(job);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch job', details: error.message });
+  }
+};
+
+// 관련 공고 추천
+exports.getRelatedJobs = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      // 현재 공고 조회
+      const currentJob = await Job.findById(id);
+      if (!currentJob) {
+          return res.status(404).json({ error: 'Job not found' });
+      }
+
+      // 관련 공고 찾기: 동일한 location 또는 같은 회사의 공고
+      const relatedJobs = await Job.find({
+          _id: { $ne: id }, // 현재 공고 제외
+          $or: [
+              { location: currentJob.location },
+              { company: currentJob.company }
+          ]
+      }).limit(5); // 최대 5개의 관련 공고 반환
+
+      res.status(200).json({ relatedJobs });
+  } catch (err) {
+      console.error('Error fetching related jobs:', err.message);
+      res.status(500).json({ error: 'Error fetching related jobs', details: err.message });
   }
 };
 

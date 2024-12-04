@@ -6,6 +6,9 @@
 ---
 
 ## 구현된 기능
+Header입력란
+- (필수) Content-Type : application/json
+- (선택) middleware를 거치는 모든 기능들은 Header의  Authorization Key에 Bearer <token>을 입력하셔야 합니다.
 
 ### 회원 관리 기능
 - 회원 가입 (`POST /auth/register`)
@@ -13,14 +16,86 @@
   - 비밀번호 암호화 (Base64)
   - 이메일 중복 검사
   - 사용자 정보 저장
+  # 요청예시
+  {
+    "name": "john",
+    "email": "user@example.com",
+    "password": "password123"
+  }
+
 - 로그인 (`POST /auth/login`)
   - 사용자 인증
   - JWT Access Token 발급
   - 실패 시 에러 처리
+
 - 회원 정보 조회 (`GET /auth/profile`)
-  - JWT 인증 미들웨어를 통해 사용자 정보 조회
-- 회원 탈퇴 (`DELETE /auth/delete`)
+  - header에 토큰 입력 후 JWT 인증 미들웨어를 통해 사용자 정보 조회
+
+- 회원 정보 수정 (`PUT /auth/profile`)
+  - JWT 인증 미들웨어를 통해 사용자 정보 수정
+  - 수정 후 자동 로그아웃되므로 수정한 비밀번호로 재로그인 필요
+    # 요청예시
+    - {
+      "name": "New Name",
+      "email": "new@example.com"
+      }
+    - {
+        "oldPassword": "oldpassword",
+        "newPassword": "newpassword123"
+      }
+
+- 회원 탈퇴 (`DELETE /auth`)
   - JWT 인증 미들웨어를 통해 사용자 계정 삭제
+
+- 토큰 갱신 (`POST /auth/refresh`)
+  - JWT refresh Token 발급받은 걸로 새 access토큰 발급
+  # 요청 예시 
+  {
+  "refreshToken": "<REFRESH_TOKEN>"
+  }
+
+### 직업 정보 조회 기능
+- 직업 공고 정보 조회 (`GET /jobs`)
+  - JWT 인증 미들웨어를 통해 직업 정보 조회
+  # 요청 예시
+  http://localhost:3000/jobs?location=서울&experience=신입&requirement=대졸&sort=date&page=1
+
+- 특정 직업 공고 정보 조회 (`GET /jobs/:id`)
+  - JWT 인증 미들웨어를 통해 직업 정보 조회
+  # 요청 예시
+  http://localhost:3000/jobs/jobId123
+
+- 직업 검색(`GET/jobs?`)
+  - company, position, keyword 검색 제공
+  # 요청 예시
+  http://localhost:3000/jobs?company=포니링크
+  http://localhost:3000/jobs?position=개발자
+  http://localhost:3000/jobs?keyword=IT
+
+- 관련 공고 찾기 (`GET /jobs/{id}/related`)
+  - 동일한 location 또는 같은 회사의 공고
+
+### 지원 기능
+- 지원 생성 (POST /applications)
+  # 요청 예시
+  {
+  "jobId": "6482c48f3e84c11111111111",
+  "resume": "http://example.com/resume.pdf"
+  }
+
+- 지원 목록 조회 (GET /applications)
+
+- 특정 사용자 지원 목록 조회 (GET /applications/:userId)
+
+- 지원 취소 (DELETE /applications/:id)
+
+### 북마크 기능
+- 북마크 추가/제거 토글처리 (POST /bookmarks)
+  # 요청 예시
+  {
+    "jobId" : "674f9f10ae4a9568c9be5ea7"
+  }
+
 
 ---
 

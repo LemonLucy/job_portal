@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllJobs, getJobById, createJob, deleteJob, updateJob } = require('../controllers/jobController');
+const { getAllJobs, getJobById, createJob, deleteJob, updateJob, getRelatedJobs } = require('../controllers/jobController');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 
@@ -67,7 +67,7 @@ const { protect } = require('../middleware/authMiddleware');
  * @swagger
  * /jobs:
  *   get:
- *     summary: 모든 채용 공고 조회 및 필터링/정렬
+ *     summary: 모든 채용 공고 조회, 검색 및 필터링/정렬
  *     tags: [Jobs]
  *     parameters:
  *       - in: query
@@ -86,11 +86,31 @@ const { protect } = require('../middleware/authMiddleware');
  *           type: string
  *         description: 학력 요건 필터링
  *       - in: query
+ *         name: company
+ *         schema:
+ *           type: string
+ *         description: 회사명 검색
+ *       - in: query
+ *         name: position
+ *         schema:
+ *           type: string
+ *         description: 포지션 검색
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         description: 키워드 검색 (제목 및 설명 포함)
+ *       - in: query
  *         name: sort
  *         schema:
  *           type: string
  *           enum: [date, deadline]
- *         description: "정렬 기준 (date: 최신순, deadline: 마감 임박순)"
+ *         description: 정렬 기준 - "date" (최신순), "deadline" (마감 임박순)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: 페이지 번호
  *     responses:
  *       200:
  *         description: 성공적으로 채용 공고 조회
@@ -131,6 +151,39 @@ router.get('/', protect, getAllJobs);
  *         description: 서버 오류
  */
 router.get('/:id', protect, getJobById);
+
+/**
+ * @swagger
+ * /jobs/{id}/related:
+ *   get:
+ *     summary: 특정 공고와 관련된 공고 추천
+ *     tags: [Jobs]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: 채용 공고 ID
+ *     responses:
+ *       200:
+ *         description: 관련 공고 추천 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 relatedJobs:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Job'
+ *       404:
+ *         description: 공고를 찾을 수 없음
+ *       500:
+ *         description: 서버 오류
+ */
+router.get('/:id/related', protect, getRelatedJobs);
+
 
 /**
  * @swagger
