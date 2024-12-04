@@ -32,18 +32,17 @@ exports.getResumes = async (req, res) => {
 
 // 이력서 수정
 exports.updateResume = async (req, res) => {
-    const { id } = req.params;
-    const { title, skills, education, experience } = req.body;
+    const { title, skills, education, experience } = req.body; // 요청 본문에서 업데이트할 데이터 추출
 
     try {
-        const updatedResume = await Resume.findByIdAndUpdate(
-            id,
-            { title, skills, education, experience, updatedAt: Date.now() },
-            { new: true }
+        const updatedResume = await Resume.findOneAndUpdate(
+            { user: req.user.id }, // 로그인한 사용자의 이력서
+            { title, skills, education, experience, updatedAt: Date.now() }, // 업데이트할 데이터
+            { new: true } // 업데이트된 데이터 반환
         );
 
         if (!updatedResume) {
-            return res.status(404).json({ error: 'Resume not found' });
+            return res.status(404).json({ error: 'Resume not found for the user' });
         }
 
         res.status(200).json({ message: 'Resume updated successfully', resume: updatedResume });
@@ -52,15 +51,14 @@ exports.updateResume = async (req, res) => {
     }
 };
 
+
 // 이력서 삭제
 exports.deleteResume = async (req, res) => {
-    const { id } = req.params;
-
     try {
-        const deletedResume = await Resume.findByIdAndDelete(id);
+        const deletedResume = await Resume.findOneAndDelete({ user: req.user.id }); // 사용자와 연관된 이력서 삭제
 
         if (!deletedResume) {
-            return res.status(404).json({ error: 'Resume not found' });
+            return res.status(404).json({ error: 'Resume not found for the user' });
         }
 
         res.status(200).json({ message: 'Resume deleted successfully' });

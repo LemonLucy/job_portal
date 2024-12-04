@@ -12,7 +12,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /filter-history:
+ * /history:
  *   post:
  *     summary: 필터 기록 저장
  *     tags: [FilterHistory]
@@ -47,7 +47,7 @@ router.post('/', protect, saveFilterHistory);
 
 /**
  * @swagger
- * /filter-history:
+ * /history:
  *   get:
  *     summary: 특정 사용자의 필터 기록 조회
  *     tags: [FilterHistory]
@@ -88,7 +88,7 @@ router.get('/', protect, getUserFilterHistory);
 
 /**
  * @swagger
- * /filter-history/{id}:
+ * /history/{id}:
  *   delete:
  *     summary: 필터 기록 삭제
  *     tags: [FilterHistory]

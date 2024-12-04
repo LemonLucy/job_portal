@@ -10,6 +10,7 @@ const jobSchema = new mongoose.Schema({
   url: { type: String, required: true, unique: true }, // 공고 URL
   deadline: { type: Date }, // 지원 마감일
   date: { type: Date }, // 공고 게시일
+  views: { type: Number, default: 0 }, // 조회수
   reviews: [
     {
       type: mongoose.Schema.Types.ObjectId,

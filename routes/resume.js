@@ -105,11 +105,11 @@ router.post('/', protect, createResume);
  *       200:
  *         description: 성공적으로 수정된 이력서
  */
-router.put('/:id', protect, updateResume);
+router.put('/', protect, updateResume);
 
 /**
  * @swagger
- * /resumes/{id}:
+ * /resumes:
  *   delete:
  *     summary: 이력서 삭제
  *     tags: [Resumes]
@@ -126,6 +126,6 @@ router.put('/:id', protect, updateResume);
  *       200:
  *         description: 성공적으로 삭제된 이력서
  */
-router.delete('/:id', protect, deleteResume);
+router.delete('/', protect, deleteResume);
 
 module.exports = router;

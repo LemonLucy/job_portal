@@ -60,45 +60,42 @@ exports.getAllJobs = async (req, res) => {
 };
 
 // 특정 채용 공고 조회
+// 특정 채용 공고 조회 및 관련 공고 포함
 exports.getJobById = async (req, res) => {
   const { id } = req.params;
   try {
-    const job = await Job.findById(id);
+    // 해당 공고 조회
+    const job = await Job.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } }, // 조회수 증가
+      { new: true } // 업데이트된 데이터 반환
+    );
+
     if (!job) {
       return res.status(404).json({ error: 'Job not found' });
     }
-    res.status(200).json(job);
+
+    // 관련 공고 찾기: 동일한 location 또는 같은 회사의 공고
+    const relatedJobs = await Job.find({
+      _id: { $ne: id }, // 현재 공고 제외
+      $or: [
+        { location: job.location },
+        { company: job.company }
+      ]
+    }).limit(5); // 최대 5개의 관련 공고 반환
+
+    res.status(200).json({
+      job,
+      relatedJobs
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch job', details: error.message });
+    res.status(500).json({
+      error: 'Failed to fetch job',
+      details: error.message
+    });
   }
 };
 
-// 관련 공고 추천
-exports.getRelatedJobs = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-      // 현재 공고 조회
-      const currentJob = await Job.findById(id);
-      if (!currentJob) {
-          return res.status(404).json({ error: 'Job not found' });
-      }
-
-      // 관련 공고 찾기: 동일한 location 또는 같은 회사의 공고
-      const relatedJobs = await Job.find({
-          _id: { $ne: id }, // 현재 공고 제외
-          $or: [
-              { location: currentJob.location },
-              { company: currentJob.company }
-          ]
-      }).limit(5); // 최대 5개의 관련 공고 반환
-
-      res.status(200).json({ relatedJobs });
-  } catch (err) {
-      console.error('Error fetching related jobs:', err.message);
-      res.status(500).json({ error: 'Error fetching related jobs', details: err.message });
-  }
-};
 
 // 채용 공고 등록
 exports.createJob = async (req, res) => {

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllJobs, getJobById, createJob, deleteJob, updateJob, getRelatedJobs } = require('../controllers/jobController');
+const { getAllJobs, getJobById, createJob, deleteJob, updateJob } = require('../controllers/jobController');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 
@@ -123,7 +123,7 @@ const { protect } = require('../middleware/authMiddleware');
  *       500:
  *         description: 서버 오류
  */
-router.get('/', protect, getAllJobs);
+router.get('/', protect, getAllJobs); // 모든 공고 조회
 
 /**
  * @swagger
@@ -150,40 +150,7 @@ router.get('/', protect, getAllJobs);
  *       500:
  *         description: 서버 오류
  */
-router.get('/:id', protect, getJobById);
-
-/**
- * @swagger
- * /jobs/{id}/related:
- *   get:
- *     summary: 특정 공고와 관련된 공고 추천
- *     tags: [Jobs]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: 채용 공고 ID
- *     responses:
- *       200:
- *         description: 관련 공고 추천 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 relatedJobs:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Job'
- *       404:
- *         description: 공고를 찾을 수 없음
- *       500:
- *         description: 서버 오류
- */
-router.get('/:id/related', protect, getRelatedJobs);
-
+router.get('/:id', protect, getJobById); // 특정 공고 조회
 
 /**
  * @swagger
@@ -203,7 +170,7 @@ router.get('/:id/related', protect, getRelatedJobs);
  *       500:
  *         description: 서버 오류
  */
-router.post('/', protect, createJob);
+router.post('/', protect, createJob); // 공고 등록
 
 /**
  * @swagger
@@ -232,7 +199,7 @@ router.post('/', protect, createJob);
  *       500:
  *         description: 서버 오류
  */
-router.put('/:id', protect, updateJob);
+router.put('/:id', protect, updateJob); // 공고 수정
 
 /**
  * @swagger
@@ -255,6 +222,6 @@ router.put('/:id', protect, updateJob);
  *       500:
  *         description: 서버 오류
  */
-router.delete('/:id',protect, deleteJob);
+router.delete('/:id', protect, deleteJob); // 공고 삭제
 
 module.exports = router;
