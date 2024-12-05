@@ -1,4 +1,4 @@
-const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerJSDoc = require("swagger-jsdoc");
 
 const swaggerOptions = {
     definition: {
@@ -19,7 +19,7 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ["./routes/*.js"], // 경로에 따라 조정
+    apis: ["./routes/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);

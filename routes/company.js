@@ -4,6 +4,26 @@ const router = express.Router();
 
 /**
  * @swagger
+ * /companies:
+ *   get:
+ *     summary: 모든 회사 정보 조회
+ *     tags: [Companies]
+ *     responses:
+ *       200:
+ *         description: 성공적으로 회사 정보 반환
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Company'
+ *       500:
+ *         description: 서버 오류
+ */
+
+
+/**
+ * @swagger
  * tags:
  *   name: Companies
  *   description: 회사 관리 API

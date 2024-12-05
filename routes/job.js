@@ -72,54 +72,33 @@ const { protect } = require('../middleware/authMiddleware');
  *     parameters:
  *       - in: query
  *         name: location
- *         schema:
- *           type: string
  *         description: 근무 지역 필터링
  *       - in: query
  *         name: experience
- *         schema:
- *           type: string
  *         description: 경력 요건 필터링
  *       - in: query
  *         name: requirement
- *         schema:
- *           type: string
  *         description: 학력 요건 필터링
  *       - in: query
  *         name: company
- *         schema:
- *           type: string
  *         description: 회사명 검색
  *       - in: query
  *         name: position
- *         schema:
- *           type: string
  *         description: 포지션 검색
  *       - in: query
  *         name: keyword
- *         schema:
- *           type: string
  *         description: 키워드 검색 (제목 및 설명 포함)
  *       - in: query
  *         name: sort
- *         schema:
- *           type: string
- *           enum: [date, deadline]
  *         description: 정렬 기준 - "date" (최신순), "deadline" (마감 임박순)
  *       - in: query
  *         name: page
- *         schema:
- *           type: integer
  *         description: 페이지 번호
  *     responses:
  *       200:
  *         description: 성공적으로 채용 공고 조회
  *         content:
  *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Job'
  *       500:
  *         description: 서버 오류
  */

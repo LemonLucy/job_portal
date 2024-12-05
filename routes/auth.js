@@ -14,47 +14,6 @@ const router = express.Router();
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       required:
- *         - email
- *         - password
- *       properties:
- *         email:
- *           type: string
- *           description: 사용자 이메일
- *         password:
- *           type: string
- *           description: 사용자 비밀번호
- *       example:
- *         email: user@example.com
- *         password: password123
- *     UpdateProfile:
- *       type: object
- *       properties:
- *         name:
- *           type: string
- *           description: 새로운 사용자 이름
- *         email:
- *           type: string
- *           description: 새로운 사용자 이메일
- *         currentPassword:
- *           type: string
- *           description: 현재 비밀번호
- *         newPassword:
- *           type: string
- *           description: 새 비밀번호
- *       example:
- *         name: New Name
- *         email: new@example.com
- *         currentPassword: oldpassword
- *         newPassword: newpassword123
- */
-
-/**
- * @swagger
  * tags:
  *   name: Auth
  *   description: 회원 관리 API
