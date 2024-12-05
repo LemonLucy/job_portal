@@ -1,4 +1,4 @@
-# 회원 관리 API (Node.js + Express + MongoDB)
+# 회원 관리 API (Node.js + Express + MongoDB) 
 
 ## 프로젝트 설명
 이 프로젝트는 Node.js, Express, MongoDB를 사용하여 기본적인 회원 관리 기능과 인증/인가 기능을 구현한 API입니다. JWT 기반 인증을 사용하여 보안성을 높였습니다.
@@ -58,21 +58,20 @@ Header입력란
 - 직업 공고 정보 조회 (`GET /jobs`)
   - JWT 인증 미들웨어를 통해 직업 정보 조회
   # 요청 예시
-  http://localhost:3000/jobs?location=서울&experience=신입&requirement=대졸&sort=date&page=1
+  http://113.198.66.75:17122/jobs?location=서울&experience=신입&requirement=대졸&sort=date&page=1
 
 - 특정 직업 공고 정보 조회 (`GET /jobs/:id`)
   - JWT 인증 미들웨어를 통해 직업 정보 조회
   - 상세정보
   # 요청 예시
-  http://localhost:3000/jobs/jobId123
+  http://113.198.66.75:17122/jobs/jobId123
 
 - 직업 검색(`GET/jobs?`)
   - company, position, keyword 검색 제공
   # 요청 예시
-  http://localhost:3000/jobs?company=포니링크
-  http://localhost:3000/jobs?position=개발자
-  http://localhost:3000/jobs?keyword=IT
-
+  http://113.198.66.75:17122/jobs?company=포니링크
+  http://113.198.66.75:17122/jobs?position=개발자
+  http://113.198.66.75:17122/jobs?keyword=IT
 
 ### 지원 기능
 - 지원 생성 (POST /applications)
@@ -192,4 +191,4 @@ Header입력란
 ## 설치 및 실행 방법
 
 - 배포된 swagger문서 확인
-  http://113.198.66.75:17122/api-docs/
+  http://113.198.66.75:17122/api-docs
