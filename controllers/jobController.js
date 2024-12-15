@@ -59,7 +59,6 @@ exports.getAllJobs = async (req, res) => {
     }
 };
 
-// 특정 채용 공고 조회
 // 특정 채용 공고 조회 및 관련 공고 포함
 exports.getJobById = async (req, res) => {
   const { id } = req.params;
