@@ -13,11 +13,7 @@ const filterRoutes=require('./routes/filterHistory')
 require('dotenv').config();
 
 const app = express();
-<<<<<<< HEAD
-const PORT = process.env.PORT || 443;
-=======
 const PORT = 443;
->>>>>>> develop
 
 // 데이터베이스 연결
 connectDB();
