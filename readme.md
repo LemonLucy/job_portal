@@ -58,20 +58,23 @@ Header입력란
 - 직업 공고 정보 조회 (`GET /jobs`)
   - JWT 인증 미들웨어를 통해 직업 정보 조회
   # 요청 예시
-  http://113.198.66.75:17122/jobs?location=서울&experience=신입&requirement=대졸&sort=date&page=1
+  http://localhost:3000/jobs?location=서울&experience=신입&requirement=대졸&sort=date&page=1
 
 - 특정 직업 공고 정보 조회 (`GET /jobs/:id`)
   - JWT 인증 미들웨어를 통해 직업 정보 조회
   - 상세정보
   # 요청 예시
-  http://113.198.66.75:17122/jobs/jobId123
+  http://localhost:3000/jobs/jobId123
 
 - 직업 검색(`GET/jobs?`)
   - company, position, keyword 검색 제공
   # 요청 예시
-  http://113.198.66.75:17122/jobs?company=포니링크
-  http://113.198.66.75:17122/jobs?position=개발자
-  http://113.198.66.75:17122/jobs?keyword=IT
+  http://localhost:3000/jobs?company=포니링크
+  http://localhost:3000/jobs?position=개발자
+  http://localhost:3000/jobs?keyword=IT
+
+- 관련 공고 찾기 (`GET /jobs/{id}/related`)
+  - 동일한 location 또는 같은 회사의 공고
 
 ### 지원 기능
 - 지원 생성 (POST /applications)
@@ -190,5 +193,8 @@ Header입력란
 
 ## 설치 및 실행 방법
 
-- 배포된 swagger문서 확인
-  http://113.198.66.75:17122/api-docs
+### 1. 클론 후 의존성 설치
+```bash
+git clone [repository_url]
+cd [project_directory]
+npm install
